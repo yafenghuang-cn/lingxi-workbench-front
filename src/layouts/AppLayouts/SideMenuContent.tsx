@@ -1,27 +1,40 @@
 import type React from "react";
+import { memo } from "react";
 import { LogoutOutlined, MenuFoldOutlined, MenuUnfoldOutlined, SettingOutlined, UserOutlined } from "@ant-design/icons";
-import { Dropdown, Layout, Menu } from "antd";
+import { Avatar, Button, Dropdown, Layout, Menu, Typography } from "antd";
 import classNames from "classnames/bind";
 import type { MenuProps } from "antd";
 import useSideMenuContent from "./hooks/useSideMenuContent.ts";
 import styles from "./styles/SideMenuContent.module.scss";
+
 const cx = classNames.bind(styles);
+const { Sider } = Layout;
+const { Text } = Typography;
 
-const SideMenuContent: React.FC = () => {
-  const { collapsed, handleCollapse } = useSideMenuContent();
+interface IMenuProps {
+  menuItems: NonNullable<MenuProps["items"]>;
+}
 
-  const userActionItems: NonNullable<MenuProps["items"]> = [
-    {
-      key: "settings",
-      icon: <SettingOutlined />,
-      label: "设置",
-    },
-    {
-      key: "logout",
-      icon: <LogoutOutlined />,
-      label: "退出",
-    },
-  ];
+const userActionItems: NonNullable<MenuProps["items"]> = [
+  {
+    key: "settings",
+    icon: <SettingOutlined />,
+    label: "设置",
+  },
+  {
+    type: "divider",
+  },
+  {
+    key: "logout",
+    icon: <LogoutOutlined />,
+    label: "退出登录",
+    danger: true,
+  },
+];
+
+const SideMenuContent: React.FC<IMenuProps> = (props) => {
+  const { menuItems } = props;
+  const { collapsed, handleCollapse, selectedKeys, openKeys, handleMenuClick, handleOpenChange } = useSideMenuContent();
 
   const handleUserActionClick: NonNullable<MenuProps["onClick"]> = ({ key }) => {
     if (key === "logout") {
@@ -33,63 +46,75 @@ const SideMenuContent: React.FC = () => {
   };
 
   const userInfo = { name: "admin", role: "超级管理员" };
-  return (
-    <Layout.Sider
-      collapsible
-      breakpoint="md"
-      className={cx("side-menu-content")}
-      collapsed={collapsed}
-      collapsedWidth={72}
-      trigger={null}
-      width={248}
-      onBreakpoint={handleCollapse}
-    >
-      <div className={cx("appLayoutSideMenu")}>
-        <div className={cx("sideMenuContent")}>
-          <Menu />
-        </div>
-        <div className={cx("sideMenuFooter", { sideMenuFooterCollapsed: collapsed })}>
-          <div className={cx("userCard", { userCardCollapsed: collapsed })} role="button" tabIndex={0}>
-            <div aria-hidden className={cx("userAvatar")}>
-              <UserOutlined />
-            </div>
-            {!collapsed && (
-              <>
-                <div className={cx("userMeta")}>
-                  <div className={cx("userName")}>{userInfo.name}</div>
-                  <div className={cx("userRole")}>{userInfo.role ?? ""}</div>
-                </div>
-                <div className={cx("userActions")}>
-                  <Dropdown
-                    menu={{
-                      items: userActionItems,
-                      onClick: handleUserActionClick,
-                    }}
-                    placement="topRight"
-                    trigger={["click"]}
-                  >
-                    <button aria-label="用户操作" className={cx("userActionTrigger")} type="button">
-                      <SettingOutlined />
-                    </button>
-                  </Dropdown>
-                </div>
-              </>
-            )}
-          </div>
 
-          <button
-            aria-label={collapsed ? "展开" : "收起"}
-            className={cx("collapseBtn", { collapseBtnCollapsed: collapsed })}
-            type="button"
+  return (
+    <Sider
+      className={cx("sider")}
+      collapsed={collapsed}
+      collapsedWidth={80}
+      collapsible
+      theme="dark"
+      trigger={null}
+      width={256}
+    >
+      <div className={cx("siderInner")}>
+        <div className={cx("siderLogo", { siderLogoCollapsed: collapsed })}>
+          <span className={cx("siderLogoMark")}>LX</span>
+          {!collapsed && <span className={cx("siderLogoTitle")}>灵犀工作台</span>}
+        </div>
+
+        <div className={cx("siderMenuWrap")}>
+          <Menu
+            className={cx("siderMenu")}
+            inlineCollapsed={collapsed}
+            items={menuItems}
+            mode="inline"
+            openKeys={collapsed ? [] : openKeys}
+            selectedKeys={selectedKeys}
+            theme="dark"
+            onClick={handleMenuClick}
+            onOpenChange={handleOpenChange}
+          />
+        </div>
+
+        <div className={cx("siderFooter", { siderFooterCollapsed: collapsed })}>
+          <Dropdown
+            menu={{
+              items: userActionItems,
+              onClick: handleUserActionClick,
+            }}
+            placement="topRight"
+            trigger={["click"]}
+          >
+            <button aria-label="用户菜单" className={cx("siderUser", { siderUserCollapsed: collapsed })} type="button">
+              <Avatar className={cx("siderUserAvatar")} icon={<UserOutlined />} size={collapsed ? 32 : 36} />
+              {!collapsed && (
+                <div className={cx("siderUserMeta")}>
+                  <Text className={cx("siderUserName")} ellipsis>
+                    {userInfo.name}
+                  </Text>
+                  <Text className={cx("siderUserRole")} ellipsis type="secondary">
+                    {userInfo.role}
+                  </Text>
+                </div>
+              )}
+              {!collapsed && <SettingOutlined className={cx("siderUserSetting")} />}
+            </button>
+          </Dropdown>
+
+          <Button
+            block
+            className={cx("siderCollapseBtn")}
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            type="text"
             onClick={handleCollapse}
           >
-            {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            {!collapsed && <span className={cx("collapseBtnText")}>收起</span>}
-          </button>
+            {!collapsed && "收起菜单"}
+          </Button>
         </div>
       </div>
-    </Layout.Sider>
+    </Sider>
   );
 };
 
-export default SideMenuContent;
+export default memo(SideMenuContent);

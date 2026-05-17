@@ -16,7 +16,26 @@ if (!rootEl) {
 
 createRoot(rootEl).render(
   <React.StrictMode>
-    <ConfigProvider locale={zhCN}>
+    <ConfigProvider
+      locale={zhCN}
+      theme={{
+        token: {
+          colorPrimary: "#1677ff",
+          borderRadius: 6,
+        },
+        components: {
+          Layout: {
+            siderBg: "#001529",
+            triggerBg: "#002140",
+          },
+          Menu: {
+            darkItemBg: "#001529",
+            darkSubMenuItemBg: "#000c17",
+            darkItemSelectedBg: "#1677ff",
+          },
+        },
+      }}
+    >
       <RouterProvider router={router} />
     </ConfigProvider>
   </React.StrictMode>,

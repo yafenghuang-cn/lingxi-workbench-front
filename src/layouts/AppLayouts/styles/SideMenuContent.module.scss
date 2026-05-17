@@ -1,163 +1,137 @@
-.side-menu-content{
-  width: 100%;
+.sider {
   height: 100%;
-  background: #001529;
-  border-right: 1px solid rgb(5 5 5 / 0.06);
-  box-shadow: none;
+  box-shadow: 2px 0 8px 0 rgb(29 35 41 / 0.05);
+
+  :global(.ant-layout-sider-children) {
+    height: 100%;
+  }
 }
 
-.appLayoutSideMenu {
-  width: 100%;
-  height: 100%;
+.siderInner {
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
-.sideMenuContent {
-  width: 100%;
+.siderLogo {
+  display: flex;
+  align-items: center;
+  height: 64px;
+  padding: 0 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+  gap: 12px;
+  border-bottom: 1px solid rgb(255 255 255 / 0.08);
+}
+
+.siderLogoCollapsed {
+  justify-content: center;
+  padding: 0;
+}
+
+.siderLogoMark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: #1677ff;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.siderLogoTitle {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.siderMenuWrap {
   flex: 1;
-  padding: 8px 8px 16px;
-  box-sizing: border-box;
-  overflow: auto;
+  overflow: hidden auto;
 }
 
-.sideMenuFooter {
+.siderMenu {
+  border-inline-end: none !important;
+}
+
+.siderFooter {
+  flex-shrink: 0;
+  padding: 8px;
+  border-top: 1px solid rgb(255 255 255 / 0.08);
+}
+
+.siderFooterCollapsed {
+  padding: 8px 12px;
+}
+
+.siderUser {
+  display: flex;
+  align-items: center;
   width: 100%;
-  padding: 0 12px 12px;
-  box-sizing: border-box;
+  gap: 12px;
+  margin-bottom: 4px;
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background: rgb(255 255 255 / 0.08);
+  }
 }
 
-.sideMenuFooterCollapsed {
-  padding: 0 8px 12px;
+.siderUserCollapsed {
+  justify-content: center;
+  padding: 8px 0;
+  margin-bottom: 8px;
 }
 
-.sideMenuFooter {
-  .userCard {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    padding: 10px 10px;
-    border-radius: 10px;
-    background: rgb(255 255 255 / 0.06);
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+.siderUserMeta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
 
-    &:hover {
-      background: rgb(255 255 255 / 0.1);
-    }
+.siderUserName {
+  display: block;
+  color: rgb(255 255 255 / 0.88) !important;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.siderUserRole {
+  display: block;
+  color: rgb(255 255 255 / 0.45) !important;
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.siderUserSetting {
+  flex-shrink: 0;
+  color: rgb(255 255 255 / 0.45);
+  font-size: 14px;
+}
+
+.siderCollapseBtn {
+  color: rgb(255 255 255 / 0.65) !important;
+  height: 40px;
+
+  &:hover {
+    color: #fff !important;
+    background: rgb(255 255 255 / 0.08) !important;
   }
 
-  .userCardCollapsed {
-    justify-content: center;
-    padding: 8px;
-    gap: 0;
-  }
-
-  .userAvatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    color: rgb(255 255 255 / 0.9);
-    background: rgb(255 255 255 / 0.12);
-    flex-shrink: 0;
-  }
-
-  .userName {
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 18px;
-    color: #fff;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .userRole {
-    font-size: 12px;
-    line-height: 16px;
-    color: rgb(255 255 255 / 0.65);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .userMeta {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    flex: 1;
-  }
-
-  .userActions {
-    flex-shrink: 0;
-  }
-
-  .userActionTrigger {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    padding: 0;
-    border: none;
-    border-radius: 6px;
-    background: transparent;
-    color: rgb(255 255 255 / 0.75);
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-
-    &:hover {
-      background: rgb(255 255 255 / 0.1);
-      color: rgb(255 255 255 / 0.95);
-    }
-
-    :global(.anticon) {
-      font-size: 16px;
-    }
-  }
-
-  .collapseBtn {
-    margin-top: 10px;
-    width: 100%;
-    height: 36px;
-    border-radius: 10px;
-    border: 1px solid rgb(255 255 255 / 0.12);
-    background: transparent;
-    color: rgb(255 255 255 / 0.85);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    cursor: pointer;
-    transition:
-      background-color 0.2s ease,
-      border-color 0.2s ease;
-
-    &:hover {
-      background: rgb(255 255 255 / 0.06);
-      border-color: rgb(255 255 255 / 0.18);
-    }
-
-    :global(.anticon) {
-      font-size: 16px;
-    }
-  }
-
-  .collapseBtnCollapsed {
-    padding: 0;
-
-    :global(.anticon) {
-      margin: 0;
-    }
-  }
-
-  .collapseBtnText {
-    font-size: 13px;
-    font-weight: 500;
+  :global(.anticon) {
+    font-size: 16px;
   }
 }

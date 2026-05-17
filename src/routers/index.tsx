@@ -2,20 +2,23 @@ import { createRootRoute, createRoute, createRouter } from "@tanstack/react-rout
 import RootLayout from "@/layouts";
 import Home from "@/pages/Home";
 import LoginPage from "@/pages/Login";
+import MockPage from "@/pages/MockPage";
 import NotFoundPage from "@/pages/NotFoundPage";
+import { appMenuLeaves } from "@/routers/menuConfig.tsx";
 
 const rootRoute = createRootRoute({
   notFoundComponent: NotFoundPage,
   pendingComponent: () => <div className="flex items-center justify-center h-screen">加载中...</div>,
-  errorComponent: ({ error }) => (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <h1 className="text-2xl font-bold text-red-500 mb-4">发生错误</h1>
-      <p className="text-gray-600 mb-4">{error.message}</p>
-      <button onClick={() => window.location.reload()} className="px-4 py-2 bg-blue-500 text-white rounded">
-        刷新页面
-      </button>
-    </div>
-  ),
+  // errorComponent: ({ error }) => (
+  //   <div className="flex flex-col items-center justify-center h-screen">
+  //     <h1 className="text-2xl font-bold text-red-500 mb-4">发生错误</h1>
+  //     <p className="text-gray-600 mb-4">{error.message}</p>
+  //     <button onClick={() => window.location.reload()} className="px-4 py-2 bg-blue-500 text-white rounded">
+  //       刷新页面
+  //     </button>
+  //   </div>
+  // ),
+  errorComponent:NotFoundPage,
 });
 
 /**
@@ -46,6 +49,17 @@ const homeRoute = createRoute({
   component: Home,
 });
 
+/** 根据菜单叶子节点自动生成 Mock 路由 */
+const mockMenuRoutes = appMenuLeaves
+  .filter((item) => item.path && item.path !== "/")
+  .map((item) =>
+    createRoute({
+      getParentRoute: () => appLayoutRoute,
+      path: item.path!,
+      component: MockPage,
+    }),
+  );
+
 /**
  * 登录页路由
  */
@@ -62,9 +76,7 @@ const loginRoute = createRoute({
 
 const routeTree = rootRoute.addChildren([
   loginRoute,
-  appLayoutRoute.addChildren([
-    homeRoute,
-  ]),
+  appLayoutRoute.addChildren([homeRoute, ...mockMenuRoutes]),
 ]);
 
 /**
