@@ -2,3 +2,6 @@
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
+
+# .eslintignore 或 .prettierignore
+routeTree.gen.ts

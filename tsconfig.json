@@ -16,7 +16,12 @@
 
     /* type checking */
     "noUnusedLocals": true,
-    "noUnusedParameters": true
+    "noUnusedParameters": true,
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "types": ["@tanstack/react-router"],
+    "strictNullChecks": true
   },
   "include": ["src"]
 }
