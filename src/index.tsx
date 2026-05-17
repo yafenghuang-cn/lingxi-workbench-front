@@ -4,7 +4,7 @@ import { ConfigProvider } from "antd";
 import zhCN from "antd/locale/zh_CN";
 import { createRoot } from "react-dom/client";
 
-import { routers } from "@/routers";
+import { router } from "@/routers";
 
 import "@/styles/global.scss";
 
@@ -17,7 +17,7 @@ if (!rootEl) {
 createRoot(rootEl).render(
   <React.StrictMode>
     <ConfigProvider locale={zhCN}>
-      <RouterProvider router={routers} />
+      <RouterProvider router={router} />
     </ConfigProvider>
   </React.StrictMode>,
 );
