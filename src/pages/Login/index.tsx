@@ -1,65 +1,30 @@
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { useNavigate, useSearch } from "@tanstack/react-router";
+// import { useNavigate, useSearch } from "@tanstack/react-router";
 import { Button, Form, Input, Tabs, Typography } from "antd";
 import classNames from "classnames/bind";
-import { useEffect, useState } from "react";
-
-import {
-  loginWebUser,
-  registerWebUser,
-  type WebLoginPayload,
-  type WebRegisterPayload,
-} from "@/api/auth";
-import { getPostLoginRedirect } from "@/lib/auth-session";
-import { getAccessToken } from "@/lib/auth-token";
+import { useState } from "react";
+import type { IWebLoginPayload, IWebRegisterPayload } from "./types";
 
 import styles from "./Login.module.scss";
 
 const cx = classNames.bind(styles);
 
 const LoginPage = () => {
-  const navigate = useNavigate();
-  const { redirect } = useSearch({ from: "/login" });
+  // const navigate = useNavigate();
+  // const { redirect } = useSearch({ from: "/login" });
   const [activeTab, setActiveTab] = useState("login");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    if (getAccessToken()) {
-      void navigate({ to: redirect ?? "/" });
-    }
-  }, [navigate, redirect]);
-
-  const handleLogin = async (values: WebLoginPayload) => {
-    setLoading(true);
-    setError("");
-
-    try {
-      await loginWebUser(values);
-      void navigate({ to: redirect ?? getPostLoginRedirect() });
-    } catch (exception) {
-      setError(exception instanceof Error ? exception.message : "登录失败");
-    } finally {
-      setLoading(false);
-    }
+  const handleLogin = async (values: IWebLoginPayload) => {
+    console.log(values, "handleLogin");
   };
 
-  const handleRegister = async (values: WebRegisterPayload) => {
+  const handleRegister = async (values: IWebRegisterPayload) => {
+    console.log(values, "handleRegister");
     if (values.password !== values.confirmPassword) {
       setError("两次输入的密码不一致");
       return;
-    }
-
-    setLoading(true);
-    setError("");
-
-    try {
-      await registerWebUser(values);
-      void navigate({ to: redirect ?? getPostLoginRedirect() });
-    } catch (exception) {
-      setError(exception instanceof Error ? exception.message : "注册失败");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -98,11 +63,7 @@ const LoginPage = () => {
                       { min: 6, message: "密码至少 6 个字符" },
                     ]}
                   >
-                    <Input.Password
-                      autoComplete="current-password"
-                      placeholder="密码"
-                      prefix={<LockOutlined />}
-                    />
+                    <Input.Password autoComplete="current-password" placeholder="密码" prefix={<LockOutlined />} />
                   </Form.Item>
                   <Button block htmlType="submit" loading={loading} type="primary">
                     登录
@@ -141,21 +102,10 @@ const LoginPage = () => {
                       { min: 6, message: "密码至少 6 个字符" },
                     ]}
                   >
-                    <Input.Password
-                      autoComplete="new-password"
-                      placeholder="密码"
-                      prefix={<LockOutlined />}
-                    />
+                    <Input.Password autoComplete="new-password" placeholder="密码" prefix={<LockOutlined />} />
                   </Form.Item>
-                  <Form.Item
-                    name="confirmPassword"
-                    rules={[{ required: true, message: "请确认密码" }]}
-                  >
-                    <Input.Password
-                      autoComplete="new-password"
-                      placeholder="确认密码"
-                      prefix={<LockOutlined />}
-                    />
+                  <Form.Item name="confirmPassword" rules={[{ required: true, message: "请确认密码" }]}>
+                    <Input.Password autoComplete="new-password" placeholder="确认密码" prefix={<LockOutlined />} />
                   </Form.Item>
                   <Button block htmlType="submit" loading={loading} type="primary">
                     注册
