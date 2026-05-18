@@ -4,7 +4,9 @@ import { ConfigProvider } from "antd";
 import zhCN from "antd/locale/zh_CN";
 import { createRoot } from "react-dom/client";
 
+import { clearAccessToken } from "@/utils/auth-token";
 import { router } from "@/routers";
+import { REQUEST_NAVIGATION_KEYS, subscribeNavigation } from "@/utils/request";
 
 import "@/styles/global.scss";
 
@@ -13,6 +15,21 @@ const rootEl = document.getElementById("root");
 if (!rootEl) {
   throw new Error('Root element "#root" not found');
 }
+
+subscribeNavigation(REQUEST_NAVIGATION_KEYS.LOGIN, (payload) => {
+  clearAccessToken();
+  void router.navigate({
+    to: "/login",
+    replace: payload?.replace === true,
+    search: {
+      redirect: typeof payload?.redirect === "string" ? payload.redirect : router.state.location.pathname,
+    },
+  });
+});
+
+subscribeNavigation(REQUEST_NAVIGATION_KEYS.FORBIDDEN, () => {
+  void router.navigate({ to: "/" });
+});
 
 createRoot(rootEl).render(
   <React.StrictMode>

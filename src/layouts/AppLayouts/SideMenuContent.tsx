@@ -5,7 +5,7 @@ import { LogoutOutlined, MenuFoldOutlined, MenuUnfoldOutlined, SettingOutlined, 
 import { Avatar, Button, Dropdown, Layout, Menu, Typography } from "antd";
 import classNames from "classnames/bind";
 import type { MenuProps } from "antd";
-import { clearAccessToken } from "@/lib/auth-token";
+import { clearAccessToken } from "@/utils/auth-token";
 import useSideMenuContent from "./hooks/useSideMenuContent.ts";
 import styles from "./styles/SideMenuContent.module.scss";
 
@@ -42,7 +42,7 @@ const SideMenuContent: React.FC<IMenuProps> = (props) => {
   const handleUserActionClick: NonNullable<MenuProps["onClick"]> = ({ key }) => {
     if (key === "logout") {
       clearAccessToken();
-      void navigate({ to: "/login" });
+      void navigate({ to: "/login", search: { redirect: undefined } });
       return;
     }
 

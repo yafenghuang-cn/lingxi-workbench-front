@@ -1,6 +1,6 @@
 import { createRootRoute, createRoute, createRouter, redirect } from "@tanstack/react-router";
 import RootLayout from "@/layouts";
-import { getAccessToken } from "@/lib/auth-token";
+import { getAccessToken } from "@/utils/auth-token";
 import AiChatPage from "@/pages/AiChat";
 import Home from "@/pages/Home";
 import LoginPage from "@/pages/Login";
@@ -13,16 +13,7 @@ const AI_CHAT_PATH = "/ai/chat";
 const rootRoute = createRootRoute({
   notFoundComponent: NotFoundPage,
   pendingComponent: () => <div className="flex items-center justify-center h-screen">加载中...</div>,
-  // errorComponent: ({ error }) => (
-  //   <div className="flex flex-col items-center justify-center h-screen">
-  //     <h1 className="text-2xl font-bold text-red-500 mb-4">发生错误</h1>
-  //     <p className="text-gray-600 mb-4">{error.message}</p>
-  //     <button onClick={() => window.location.reload()} className="px-4 py-2 bg-blue-500 text-white rounded">
-  //       刷新页面
-  //     </button>
-  //   </div>
-  // ),
-  errorComponent:NotFoundPage,
+  errorComponent: NotFoundPage,
 });
 
 /**
