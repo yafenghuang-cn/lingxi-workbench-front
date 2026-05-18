@@ -1,29 +1,15 @@
+import React from "react";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Tabs, Typography } from "antd";
 import classNames from "classnames/bind";
-import { useState } from "react";
-
-import type { IWebLoginPayload, IWebRegisterPayload } from "./types";
+import useLogin from "./useLogin.ts";
 
 import styles from "./Login.module.scss";
 
 const cx = classNames.bind(styles);
 
-const LoginPage = (): JSX.Element => {
-  const [activeTab, setActiveTab] = useState<string>("login");
-  const [error, setError] = useState<string>("");
-
-  const handleLogin = async (values: IWebLoginPayload): Promise<void> => {
-    console.log(values, "handleLogin");
-  };
-
-  const handleRegister = async (values: IWebRegisterPayload): Promise<void> => {
-    console.log(values, "handleRegister");
-    if (values.password !== values.confirmPassword) {
-      setError("两次输入的密码不一致");
-      return;
-    }
-  };
+const LoginPage = (): React.JSX.Element => {
+  const { activeTab, errorText, handleLogin, handleRegister, handelActiveTab } = useLogin();
 
   return (
     <main className={cx("page")}>
@@ -111,12 +97,12 @@ const LoginPage = (): JSX.Element => {
               ),
             },
           ]}
-          onChange={setActiveTab}
+          onChange={handelActiveTab}
         />
 
-        {error && (
+        {errorText && (
           <Typography.Text className={cx("error")} type="danger">
-            {error}
+            {errorText}
           </Typography.Text>
         )}
       </div>

@@ -3,9 +3,6 @@ import { RouterProvider } from "@tanstack/react-router";
 import { ConfigProvider } from "antd";
 import zhCN from "antd/locale/zh_CN";
 import { createRoot } from "react-dom/client";
-
-// import { clearAccessToken } from "@/utils/auth-token";
-// import { REQUEST_EVENT_KEYS, subscribeNavigation } from "@/utils/request";
 import { router } from "@/routers";
 
 import "@/styles/global.scss";

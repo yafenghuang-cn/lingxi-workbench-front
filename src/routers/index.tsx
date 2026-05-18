@@ -8,20 +8,21 @@ import MockPage from "@/pages/MockPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 
 import { appMenuLeaves } from "@/routers/menuConfig.tsx";
+import React from "react";
 
 const AI_CHAT_PATH = "/ai/chat";
 
 /* eslint-disable react-refresh/only-export-components */
-const AiChatPage = (): JSX.Element => <MockPage />;
+const AiChatPage = (): React.JSX.Element => <MockPage />;
 
 const rootRoute = createRootRoute({
   notFoundComponent: NotFoundPage,
-  pendingComponent: (): JSX.Element => <div className="flex items-center justify-center h-screen">加载中...</div>,
+  pendingComponent: (): React.JSX.Element => <div className="flex items-center justify-center h-screen">加载中...</div>,
   errorComponent: NotFoundPage,
 });
 
 const authGuard = async ({ location }: { location: { pathname: string } }): Promise<void> => {
-  const accessToken = await getAccessToken();
+  const accessToken = getAccessToken();
 
   if (!accessToken) {
     throw redirect({
