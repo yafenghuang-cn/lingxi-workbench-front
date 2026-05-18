@@ -1,9 +1,11 @@
 import type React from "react";
 import { memo } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { LogoutOutlined, MenuFoldOutlined, MenuUnfoldOutlined, SettingOutlined, UserOutlined } from "@ant-design/icons";
 import { Avatar, Button, Dropdown, Layout, Menu, Typography } from "antd";
 import classNames from "classnames/bind";
 import type { MenuProps } from "antd";
+import { clearAccessToken } from "@/lib/auth-token";
 import useSideMenuContent from "./hooks/useSideMenuContent.ts";
 import styles from "./styles/SideMenuContent.module.scss";
 
@@ -34,10 +36,13 @@ const userActionItems: NonNullable<MenuProps["items"]> = [
 
 const SideMenuContent: React.FC<IMenuProps> = (props) => {
   const { menuItems } = props;
+  const navigate = useNavigate();
   const { collapsed, handleCollapse, selectedKeys, openKeys, handleMenuClick, handleOpenChange } = useSideMenuContent();
 
   const handleUserActionClick: NonNullable<MenuProps["onClick"]> = ({ key }) => {
     if (key === "logout") {
+      clearAccessToken();
+      void navigate({ to: "/login" });
       return;
     }
 

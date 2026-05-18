@@ -9,6 +9,7 @@ import {
   InboxOutlined,
   LineChartOutlined,
   ProfileOutlined,
+  RobotOutlined,
   SettingOutlined,
   ShopOutlined,
   ShoppingOutlined,
@@ -36,6 +37,12 @@ export const appMenuTree: IAppMenuItem[] = [
     label: "工作台",
     icon: <HomeOutlined />,
     path: "/",
+  },
+  {
+    key: "/ai/chat",
+    label: "AI 对话",
+    icon: <RobotOutlined />,
+    path: "/ai/chat",
   },
   {
     key: "order-center",

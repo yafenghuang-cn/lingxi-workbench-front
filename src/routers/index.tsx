@@ -1,10 +1,14 @@
-import { createRootRoute, createRoute, createRouter } from "@tanstack/react-router";
+import { createRootRoute, createRoute, createRouter, redirect } from "@tanstack/react-router";
 import RootLayout from "@/layouts";
+import { getAccessToken } from "@/lib/auth-token";
+import AiChatPage from "@/pages/AiChat";
 import Home from "@/pages/Home";
 import LoginPage from "@/pages/Login";
 import MockPage from "@/pages/MockPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 import { appMenuLeaves } from "@/routers/menuConfig.tsx";
+
+const AI_CHAT_PATH = "/ai/chat";
 
 const rootRoute = createRootRoute({
   notFoundComponent: NotFoundPage,
@@ -26,7 +30,12 @@ const rootRoute = createRootRoute({
  * 检查用户是否已登录，未登录则重定向到登录页
  */
 const authGuard = async ({ location }: { location: { pathname: string } }) => {
-  console.log(location, "location");
+  if (!getAccessToken()) {
+    throw redirect({
+      to: "/login",
+      search: { redirect: location.pathname },
+    });
+  }
 };
 
 /**
@@ -49,9 +58,15 @@ const homeRoute = createRoute({
   component: Home,
 });
 
+const aiChatRoute = createRoute({
+  getParentRoute: () => appLayoutRoute,
+  path: AI_CHAT_PATH,
+  component: AiChatPage,
+});
+
 /** 根据菜单叶子节点自动生成 Mock 路由 */
 const mockMenuRoutes = appMenuLeaves
-  .filter((item) => item.path && item.path !== "/")
+  .filter((item) => item.path && item.path !== "/" && item.path !== AI_CHAT_PATH)
   .map((item) =>
     createRoute({
       getParentRoute: () => appLayoutRoute,
@@ -72,11 +87,16 @@ const loginRoute = createRoute({
       redirect: search.redirect as string | undefined,
     };
   },
+  beforeLoad: () => {
+    if (getAccessToken()) {
+      throw redirect({ to: "/" });
+    }
+  },
 });
 
 const routeTree = rootRoute.addChildren([
   loginRoute,
-  appLayoutRoute.addChildren([homeRoute, ...mockMenuRoutes]),
+  appLayoutRoute.addChildren([homeRoute, aiChatRoute, ...mockMenuRoutes]),
 ]);
 
 /**
