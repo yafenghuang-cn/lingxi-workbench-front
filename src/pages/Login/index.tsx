@@ -1,26 +1,23 @@
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-// import { useNavigate, useSearch } from "@tanstack/react-router";
 import { Button, Form, Input, Tabs, Typography } from "antd";
 import classNames from "classnames/bind";
 import { useState } from "react";
+
 import type { IWebLoginPayload, IWebRegisterPayload } from "./types";
 
 import styles from "./Login.module.scss";
 
 const cx = classNames.bind(styles);
 
-const LoginPage = () => {
-  // const navigate = useNavigate();
-  // const { redirect } = useSearch({ from: "/login" });
-  const [activeTab, setActiveTab] = useState("login");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+const LoginPage = (): JSX.Element => {
+  const [activeTab, setActiveTab] = useState<string>("login");
+  const [error, setError] = useState<string>("");
 
-  const handleLogin = async (values: IWebLoginPayload) => {
+  const handleLogin = async (values: IWebLoginPayload): Promise<void> => {
     console.log(values, "handleLogin");
   };
 
-  const handleRegister = async (values: IWebRegisterPayload) => {
+  const handleRegister = async (values: IWebRegisterPayload): Promise<void> => {
     console.log(values, "handleRegister");
     if (values.password !== values.confirmPassword) {
       setError("两次输入的密码不一致");
@@ -65,7 +62,7 @@ const LoginPage = () => {
                   >
                     <Input.Password autoComplete="current-password" placeholder="密码" prefix={<LockOutlined />} />
                   </Form.Item>
-                  <Button block htmlType="submit" loading={loading} type="primary">
+                  <Button block htmlType="submit" type="primary">
                     登录
                   </Button>
                 </Form>
@@ -107,7 +104,7 @@ const LoginPage = () => {
                   <Form.Item name="confirmPassword" rules={[{ required: true, message: "请确认密码" }]}>
                     <Input.Password autoComplete="new-password" placeholder="确认密码" prefix={<LockOutlined />} />
                   </Form.Item>
-                  <Button block htmlType="submit" loading={loading} type="primary">
+                  <Button block htmlType="submit" type="primary">
                     注册
                   </Button>
                 </Form>
