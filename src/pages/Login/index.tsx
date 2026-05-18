@@ -2,7 +2,7 @@ import React from "react";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Tabs, Typography } from "antd";
 import classNames from "classnames/bind";
-import useLogin from "./useLogin.ts";
+import useLogin from "@/hooks/useAuth";
 
 import styles from "./Login.module.scss";
 
@@ -12,7 +12,7 @@ const LoginPage = (): React.JSX.Element => {
   const { activeTab, errorText, handleLogin, handleRegister, handelActiveTab } = useLogin();
 
   return (
-    <main className={cx("page")}>
+    <div className={cx("page")}>
       <div className={cx("card")}>
         <div className={cx("header")}>
           <span className={cx("logo")}>LX</span>
@@ -106,7 +106,7 @@ const LoginPage = (): React.JSX.Element => {
           </Typography.Text>
         )}
       </div>
-    </main>
+    </div>
   );
 };
 

@@ -1,7 +1,8 @@
 import { useState } from "react";
+
 import { useNavigate } from "@tanstack/react-router";
 import { login, register } from "@/services/user";
-import { setAccessToken } from "@/utils/auth-token";
+import { setAccessToken,clearAccessToken } from "@/utils/auth-token";
 import type { IWebLoginDto, IWebRegisterDto } from "@/services/user";
 
 const useLogin = () => {
@@ -18,7 +19,6 @@ const useLogin = () => {
     try {
       setLoading(true);
       const response = await login(values);
-      console.log(response, "response");
       setAccessToken(response.accessToken);
       await navigate({ to: "/" });
     } catch (error) {
@@ -47,6 +47,12 @@ const useLogin = () => {
     }
   };
 
+  //退出登录
+  const handleLogout = () => {
+    clearAccessToken();
+    navigate({ to: "/login" });
+  };
+
   return {
     loading,
     activeTab,
@@ -54,6 +60,7 @@ const useLogin = () => {
     handleLogin,
     handleRegister,
     handelActiveTab,
+    handleLogout
   };
 };
 
