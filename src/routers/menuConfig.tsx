@@ -44,6 +44,14 @@ export const appMenuTree: IAppMenuItem[] = [
     icon: <RobotOutlined />,
     path: "/ai/chat",
   },
+  /**
+   * 3d地图显示
+   */
+  {
+    key: "/threeDMap",
+    label: "3D地图",
+    path: "/threeDMap",
+  },
   {
     key: "order-center",
     label: "订单中心",
@@ -299,11 +307,7 @@ export const findMenuItemByKey = (key: string, items: IAppMenuItem[] = appMenuTr
 
 export const getSelectedMenuKey = (pathname: string): string => findMenuItemByPath(pathname)?.key ?? "/";
 
-const findAncestorKeys = (
-  targetKey: string,
-  items: IAppMenuItem[],
-  ancestors: string[] = [],
-): string[] | undefined => {
+const findAncestorKeys = (targetKey: string, items: IAppMenuItem[], ancestors: string[] = []): string[] | undefined => {
   for (const item of items) {
     if (item.key === targetKey) {
       return ancestors;

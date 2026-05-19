@@ -6,8 +6,7 @@ import Home from "@/pages/Home";
 import LoginPage from "@/pages/Login";
 import MockPage from "@/pages/MockPage";
 import NotFoundPage from "@/pages/NotFoundPage";
-
-import { appMenuLeaves } from "@/routers/menuConfig.tsx";
+import ThreeDMapPage from "@/pages/ThreeDMapPage";
 import React from "react";
 
 const AI_CHAT_PATH = "/ai/chat";
@@ -51,19 +50,9 @@ const aiChatRoute = createRoute({
   path: AI_CHAT_PATH,
 });
 
-const mockMenuRoutes = appMenuLeaves
-  .filter((item) => item.path && item.path !== "/" && item.path !== AI_CHAT_PATH)
-  .map((item) =>
-    createRoute({
-      component: MockPage,
-      getParentRoute: (): typeof appLayoutRoute => appLayoutRoute,
-      path: item.path ?? "/",
-    }),
-  );
-
 const loginRoute = createRoute({
   beforeLoad: async (): Promise<void> => {
-    const accessToken = await getAccessToken();
+    const accessToken = getAccessToken();
 
     if (accessToken) {
       throw redirect({ to: "/" });
@@ -77,9 +66,17 @@ const loginRoute = createRoute({
   }),
 });
 
+//3d地图显示
+
+const threeDMapPage = createRoute({
+  component: ThreeDMapPage,
+  getParentRoute: (): typeof appLayoutRoute => appLayoutRoute,
+  path: "/threeDMap",
+});
+
 const routeTree = rootRoute.addChildren([
   loginRoute,
-  appLayoutRoute.addChildren([homeRoute, aiChatRoute, ...mockMenuRoutes]),
+  appLayoutRoute.addChildren([homeRoute, aiChatRoute, threeDMapPage]),
 ]);
 
 export const router = createRouter({
