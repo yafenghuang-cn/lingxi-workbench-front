@@ -1,89 +1,92 @@
+import React, { lazy, Suspense } from "react";
 import { createRootRoute, createRoute, createRouter, redirect } from "@tanstack/react-router";
-
-import RootLayout from "@/layouts";
+import type { RouteComponent } from "@tanstack/react-router";
 import { getAccessToken } from "@/utils/auth-token";
-import Home from "@/pages/Home";
-import LoginPage from "@/pages/Login";
-import MockPage from "@/pages/MockPage";
-import NotFoundPage from "@/pages/NotFoundPage";
-import ThreeDMapPage from "@/pages/ThreeDMapPage";
-import React from "react";
 
-const AI_CHAT_PATH = "/ai/chat";
+const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
+const RootLayout = lazy(() => import("@/layouts"));
+const Home = lazy(() => import("@/pages/Home"));
+const Login = lazy(() => import("@/pages/Login"));
+const ThreeDMap = lazy(() => import("@/pages/ThreeDMapPage"));
+const AiChatPage = lazy(() => import("@/pages/Aichat"));
 
-/* eslint-disable react-refresh/only-export-components */
-const AiChatPage = (): React.JSX.Element => <MockPage />;
+const RoutePendingPage = (): React.JSX.Element => (
+  <div className="flex items-center justify-center h-screen">加载中...</div>
+);
+
+interface createAppRouteProps {
+  path: string;
+  component: RouteComponent;
+  beforeLoad?: any;
+  validateSearch?: any;
+}
+
+const createAppRoute = (payload: createAppRouteProps) =>
+  createRoute({
+    path: payload.path,
+    component: () => (
+      <Suspense fallback={<RoutePendingPage />}>
+        <payload.component />
+      </Suspense>
+    ),
+    beforeLoad: payload.beforeLoad,
+    validateSearch: payload.validateSearch,
+    getParentRoute: () => appLayoutRoute,
+    preload: true,
+    caseSensitive: true,
+  });
 
 const rootRoute = createRootRoute({
-  notFoundComponent: NotFoundPage,
-  pendingComponent: (): React.JSX.Element => <div className="flex items-center justify-center h-screen">加载中...</div>,
   errorComponent: NotFoundPage,
+  notFoundComponent: NotFoundPage,
+  pendingComponent: RoutePendingPage,
 });
-
-const authGuard = async ({ location }: { location: { pathname: string } }): Promise<void> => {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
-    throw redirect({
-      search: { redirect: location.pathname },
-      to: "/login",
-    });
-  }
-};
 
 const appLayoutRoute = createRoute({
-  beforeLoad: authGuard,
-  component: RootLayout,
-  getParentRoute: (): typeof rootRoute => rootRoute,
-  id: "app-layout",
-});
-
-const homeRoute = createRoute({
-  component: Home,
-  getParentRoute: (): typeof appLayoutRoute => appLayoutRoute,
-  path: "/",
-});
-
-const aiChatRoute = createRoute({
-  component: AiChatPage,
-  getParentRoute: (): typeof appLayoutRoute => appLayoutRoute,
-  path: AI_CHAT_PATH,
-});
-
-const loginRoute = createRoute({
-  beforeLoad: async (): Promise<void> => {
-    const accessToken = getAccessToken();
-
-    if (accessToken) {
-      throw redirect({ to: "/" });
+  beforeLoad(ctx) {
+    console.log(ctx, "ctx");
+    const token = getAccessToken();
+    // 无token → 重定向到登录页
+    if (!token) {
+      throw redirect({ to: "/login" });
     }
   },
-  component: LoginPage,
-  getParentRoute: (): typeof rootRoute => rootRoute,
-  path: "/login",
-  validateSearch: (search: Record<string, unknown>): { redirect?: string } => ({
-    redirect: search.redirect as string | undefined,
-  }),
+  component: RootLayout,
+  getParentRoute: () => rootRoute,
+  id: "lingxi-workbench-front",
+  preload: true,
 });
 
-//3d地图显示
+const loginRoute = createAppRoute({
+  path: "/login",
+  component: Login,
+});
 
-const threeDMapPage = createRoute({
-  component: ThreeDMapPage,
-  getParentRoute: (): typeof appLayoutRoute => appLayoutRoute,
+const homeRoute = createAppRoute({
+  path: "/",
+  component: Home,
+});
+
+const aiChatRoute = createAppRoute({
+  path: "/ai-chat",
+  component: AiChatPage,
+});
+
+const threeDMapRoute = createAppRoute({
   path: "/threeDMap",
+  component: ThreeDMap,
 });
 
 const routeTree = rootRoute.addChildren([
   loginRoute,
-  appLayoutRoute.addChildren([homeRoute, aiChatRoute, threeDMapPage]),
+  appLayoutRoute.addChildren([homeRoute, aiChatRoute, threeDMapRoute]),
 ]);
 
 export const router = createRouter({
-  defaultPreload: "intent",
-  defaultPreloadDelay: 200,
   routeTree,
   scrollRestoration: true,
+  defaultPreloadDelay: 200,
+  defaultPreload: "intent",
 });
 
 declare module "@tanstack/react-router" {

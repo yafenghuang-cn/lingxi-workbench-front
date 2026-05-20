@@ -30,27 +30,36 @@ export interface IAppMenuItem {
   children?: IAppMenuItem[];
 }
 
+type AntdMenuItem = NonNullable<MenuProps["items"]>[number];
+
+export const APP_ROUTE_PATHS = {
+  HOME: "/",
+  LOGIN: "/login",
+  AI_CHAT: "/ai-chat",
+  THREE_D_MAP: "/threeDMap",
+} as const;
+
 /** 侧边栏树形菜单 Mock 数据 */
 export const appMenuTree: IAppMenuItem[] = [
   {
-    key: "/",
+    key: APP_ROUTE_PATHS.HOME,
     label: "工作台",
     icon: <HomeOutlined />,
-    path: "/",
+    path: APP_ROUTE_PATHS.HOME,
   },
   {
-    key: "/ai/chat",
+    key: APP_ROUTE_PATHS.AI_CHAT,
     label: "AI 对话",
     icon: <RobotOutlined />,
-    path: "/ai/chat",
+    path: APP_ROUTE_PATHS.AI_CHAT,
   },
   /**
    * 3d地图显示
    */
   {
-    key: "/threeDMap",
+    key: APP_ROUTE_PATHS.THREE_D_MAP,
     label: "3D地图",
-    path: "/threeDMap",
+    path: APP_ROUTE_PATHS.THREE_D_MAP,
   },
   {
     key: "order-center",
@@ -243,7 +252,7 @@ export const appMenuTree: IAppMenuItem[] = [
   },
 ];
 
-const toAntdMenuItem = (item: IAppMenuItem): NonNullable<MenuProps["items"]>[number] => {
+const toAntdMenuItem = (item: IAppMenuItem): AntdMenuItem => {
   const { key, label, icon, children } = item;
 
   if (children?.length) {
@@ -262,67 +271,74 @@ const toAntdMenuItem = (item: IAppMenuItem): NonNullable<MenuProps["items"]>[num
   };
 };
 
-export const getAppMenuAntdItems = (): NonNullable<MenuProps["items"]> => appMenuTree.map(toAntdMenuItem);
+interface IMenuTreeMeta {
+  ancestorKeysByKey: Map<string, string[]>;
+  itemByKey: Map<string, IAppMenuItem>;
+  leaves: IAppMenuItem[];
+}
 
-const flattenMenuTree = (items: IAppMenuItem[], result: IAppMenuItem[] = []): IAppMenuItem[] => {
-  for (const item of items) {
-    if (item.path) {
-      result.push(item);
+const buildMenuTreeMeta = (items: IAppMenuItem[]): IMenuTreeMeta => {
+  const ancestorKeysByKey = new Map<string, string[]>();
+  const itemByKey = new Map<string, IAppMenuItem>();
+  const leaves: IAppMenuItem[] = [];
+
+  const visit = (nodes: IAppMenuItem[], ancestors: string[] = []): void => {
+    for (const item of nodes) {
+      itemByKey.set(item.key, item);
+      ancestorKeysByKey.set(item.key, ancestors);
+
+      if (item.path) {
+        leaves.push(item);
+      }
+
+      if (item.children?.length) {
+        visit(item.children, [...ancestors, item.key]);
+      }
     }
-    if (item.children?.length) {
-      flattenMenuTree(item.children, result);
-    }
-  }
-  return result;
+  };
+
+  visit(items);
+
+  return {
+    ancestorKeysByKey,
+    itemByKey,
+    leaves,
+  };
 };
+
+const appMenuAntdItems = appMenuTree.map(toAntdMenuItem);
+const { ancestorKeysByKey, itemByKey, leaves: appMenuLeaves } = buildMenuTreeMeta(appMenuTree);
+
+export const getAppMenuAntdItems = (): NonNullable<MenuProps["items"]> => appMenuAntdItems;
 
 /** 所有可导航的叶子菜单 */
-export const appMenuLeaves = flattenMenuTree(appMenuTree);
+export { appMenuLeaves };
 
 const matchPath = (pathname: string, path: string): boolean =>
-  pathname === path || (path !== "/" && pathname.startsWith(`${path}/`));
+  pathname === path || (path !== APP_ROUTE_PATHS.HOME && pathname.startsWith(`${path}/`));
 
 export const findMenuItemByPath = (pathname: string): IAppMenuItem | undefined => {
-  const leaves = appMenuLeaves
-    .filter((item) => item.path && matchPath(pathname, item.path))
-    .sort((a, b) => (b.path?.length ?? 0) - (a.path?.length ?? 0));
+  let matchedItem: IAppMenuItem | undefined;
 
-  return leaves[0];
-};
-
-export const findMenuItemByKey = (key: string, items: IAppMenuItem[] = appMenuTree): IAppMenuItem | undefined => {
-  for (const item of items) {
-    if (item.key === key) {
-      return item;
+  for (const item of appMenuLeaves) {
+    if (!item.path || !matchPath(pathname, item.path)) {
+      continue;
     }
-    if (item.children?.length) {
-      const found = findMenuItemByKey(key, item.children);
-      if (found) {
-        return found;
-      }
+
+    if (!matchedItem || item.path.length > (matchedItem.path?.length ?? 0)) {
+      matchedItem = item;
     }
   }
-  return undefined;
+
+  return matchedItem;
 };
 
-export const getSelectedMenuKey = (pathname: string): string => findMenuItemByPath(pathname)?.key ?? "/";
+export const findMenuItemByKey = (key: string): IAppMenuItem | undefined => itemByKey.get(key);
 
-const findAncestorKeys = (targetKey: string, items: IAppMenuItem[], ancestors: string[] = []): string[] | undefined => {
-  for (const item of items) {
-    if (item.key === targetKey) {
-      return ancestors;
-    }
-    if (item.children?.length) {
-      const found = findAncestorKeys(targetKey, item.children, [...ancestors, item.key]);
-      if (found) {
-        return found;
-      }
-    }
-  }
-  return undefined;
-};
+export const getSelectedMenuKey = (pathname: string): string =>
+  findMenuItemByPath(pathname)?.key ?? APP_ROUTE_PATHS.HOME;
 
 export const getOpenMenuKeys = (pathname: string): string[] => {
   const selectedKey = getSelectedMenuKey(pathname);
-  return findAncestorKeys(selectedKey, appMenuTree) ?? [];
+  return ancestorKeysByKey.get(selectedKey) ?? [];
 };
